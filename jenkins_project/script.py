@@ -34,7 +34,8 @@ def connect_sqlite():
     return conn
 
 def create_table_jobs(cursor):
-    cursor.execute("CREATE TABLE IF NOT EXISTS Jobs ( id uniqueidentifier, name  varchar(255), desc  varchar(255), running bit, enabled bit, time datetime);" )
+    sql = '''CREATE TABLE IF NOT EXISTS Jobs ( id uniqueidentifier, name  varchar(255), desc  varchar(255), running bit, enabled bit, time datetime, PRIMARY KEY (id));'''
+    cursor.execute(sql)
 
 
 if __name__ == "__main__":
@@ -44,13 +45,13 @@ if __name__ == "__main__":
     sqlite_cursor = conn.cursor()
 
     create_table_jobs(sqlite_cursor)
-    conn.commit()
+
 
 
     for job in jenkins_server.get_jobs():
         print(get_job_status(jenkins_server, job[0]))
         record_sqlite(sqlite_cursor, job[0], get_job_status(jenkins_server, job[0]))
 
-
+    conn.commit()
     conn.close()
 
